@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>sabanomisoniシャッフル</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    .char {
+      font-size: 2em;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🍲 sabanomisoni シャッフル！</h1>
+  <div id="output"></div>
+  <h2 id="result"></h2>
+  <button onclick="shuffleAndShow()">もう一回！</button>
+
+  <script>
+    function shuffleAndShow() {
+      const target = "sabanomisoni";
+      let chars = target.split('');
+      let outputDiv = document.getElementById("output");
+      let resultDiv = document.getElementById("result");
+
+      // シャッフル
+      for (let i = chars.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [chars[i], chars[j]] = [chars[j], chars[i]];
+      }
+
+      // 表示クリア
+      outputDiv.innerHTML = "";
+      resultDiv.innerHTML = "";
+
+      // 1文字ずつ表示（時間差）
+      let result = "";
+      chars.forEach((char, index) => {
+        setTimeout(() => {
+          let span = document.createElement("span");
+          span.className = "char";
+          span.textContent = `${index + 1}文字目 → ${char}`;
+          outputDiv.appendChild(span);
+          outputDiv.appendChild(document.createElement("br"));
+          result += char;
+          if (index === chars.length - 1) {
+            setTimeout(() => {
+              if (result === target) {
+                resultDiv.textContent = "🎉 sabanomisoni 完全一致！";
+              } else {
+                resultDiv.textContent = "😢 残念、違いました。";
+              }
+            }, 500);
+          }
+        }, index * 300);
+      });
+    }
+  </script>
+
+</body>
+</html>
