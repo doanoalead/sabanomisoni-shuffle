@@ -2,64 +2,143 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>sabanomisoniシャッフル</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
-      margin-top: 50px;
+      margin: 20px;
+      background-color: #fefefe;
     }
+
+    h1 {
+      font-size: 6vw;
+      margin-bottom: 30px;
+    }
+
     .char {
-      font-size: 2em;
+      font-size: 4vw;
+      font-family: monospace;
+      margin: 4px;
+      white-space: pre;
+    }
+
+    .result-box {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      font-size: 4vw;
+      padding: 10px 20px;
       margin: 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    /* PC画面用に少し調整 */
+    @media (min-width: 600px) {
+      .char {
+        font-size: 20px;
+      }
+
+      button {
+        font-size: 16px;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
     }
   </style>
 </head>
 <body>
 
   <h1>🍲 sabanomisoni シャッフル！</h1>
-  <div id="output"></div>
-  <h2 id="result"></h2>
-  <button onclick="shuffleAndShow()">もう一回！</button>
+
+  <div id="all-results"></div>
+
+  <div class="buttons">
+    <button onclick="shuffleAndShow()">1回だけ</button>
+    <button onclick="tenShuffles()">🎲 十連ガチャ！</button>
+  </div>
 
   <script>
-    function shuffleAndShow() {
+    function shuffleOnce(callback) {
       const target = "sabanomisoni";
       let chars = target.split('');
-      let outputDiv = document.getElementById("output");
-      let resultDiv = document.getElementById("result");
+      let result = "";
 
-      // シャッフル
+      // シャッフル（Fisher–Yates）
       for (let i = chars.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [chars[i], chars[j]] = [chars[j], chars[i]];
       }
 
-      // 表示クリア
-      outputDiv.innerHTML = "";
-      resultDiv.innerHTML = "";
+      const box = document.createElement("div");
+      box.className = "result-box";
 
-      // 1文字ずつ表示（時間差）
-      let result = "";
+      const output = document.createElement("div");
+      const resultLine = document.createElement("div");
+
       chars.forEach((char, index) => {
-        setTimeout(() => {
-          let span = document.createElement("span");
-          span.className = "char";
-          span.textContent = `${index + 1}文字目 → ${char}`;
-          outputDiv.appendChild(span);
-          outputDiv.appendChild(document.createElement("br"));
-          result += char;
-          if (index === chars.length - 1) {
-            setTimeout(() => {
-              if (result === target) {
-                resultDiv.textContent = "🎉 sabanomisoni 完全一致！";
-              } else {
-                resultDiv.textContent = "😢 残念、違いました。";
-              }
-            }, 500);
-          }
-        }, index * 300);
+        result += char;
+        const span = document.createElement("span");
+        span.className = "char";
+        span.textContent = `${String(index + 1).padStart(2)}文字目 → ${char}`;
+        output.appendChild(span);
+        output.appendChild(document.createElement("br"));
       });
+
+      resultLine.className = "char";
+      resultLine.textContent = `🧪 結果: ${result}`;
+      output.appendChild(document.createElement("br"));
+      output.appendChild(resultLine);
+
+      const verdict = document.createElement("div");
+      verdict.className = "char";
+      verdict.textContent = (result === target) ? "🎉 完全一致！sabanomisoni！" : "😢 違いました。";
+
+      box.appendChild(output);
+      box.appendChild(verdict);
+
+      if (callback) callback(box);
+    }
+
+    function shuffleAndShow() {
+      const allResults = document.getElementById("all-results");
+      allResults.innerHTML = "";
+      shuffleOnce((box) => {
+        allResults.appendChild(box);
+      });
+    }
+
+    function tenShuffles() {
+      const allResults = document.getElementById("all-results");
+      allResults.innerHTML = "";
+      for (let i = 0; i < 10; i++) {
+        shuffleOnce((box) => {
+          allResults.appendChild(box);
+        });
+      }
     }
   </script>
 
