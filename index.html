@@ -1,94 +1,26 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>sabanomisoniシャッフル</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin: 20px;
-      background-color: #fefefe;
-    }
-
-    h1 {
-      font-size: 6vw;
-      margin-bottom: 30px;
-    }
-
-    .char {
-      font-size: 4vw;
-      font-family: monospace;
-      margin: 4px;
-      white-space: pre;
-    }
-
-    .char.correct {
-      background-color: #c0ffc0;
-      border-radius: 4px;
-      padding: 2px 4px;
-    }
-
-    .result-box {
-      margin-bottom: 30px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .buttons {
-      margin-top: 20px;
-    }
-
-    button {
-      font-size: 4vw;
-      padding: 10px 20px;
-      margin: 10px;
-      border: none;
-      border-radius: 6px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    @media (min-width: 600px) {
-      .char {
-        font-size: 20px;
-      }
-
-      button {
-        font-size: 16px;
-      }
-
-      h1 {
-        font-size: 32px;
-      }
-    }
-  </style>
-</head>
+<!-- ...前略（スタイル等は前回のまま）... -->
 <body>
 
   <h1>🍲 sabanomisoni シャッフル！</h1>
 
-  <div id="all-results"></div>
-
   <div class="buttons">
     <button onclick="shuffleAndShow()">1回だけ</button>
     <button onclick="tenShuffles()">🎲 十連ガチャ！</button>
+    <br><br>
+    <label>🎯目標一致数：</label>
+    <input id="target-count" type="number" min="0" max="12" value="12" />
+    <button onclick="startAuto()">▶️ 自動抽選開始</button>
+    <button onclick="stopAuto()">⏹ 停止</button>
   </div>
+
+  <div class="char" id="attempt-count" style="margin-top:10px;"></div>
+  <div id="all-results"></div>
 
   <script>
     const target = "sabanomisoni";
     const targetList = target.split('');
+    let autoInterval = null;
+    let attemptNumber = 0;
 
     function getEvaluation(correctCount) {
       if (correctCount === 12) return "👑 神！完全一致！";
@@ -122,7 +54,7 @@
         span.className = "char";
 
         if (char === targetList[i]) {
-          span.classList.add("correct"); // ハイライト
+          span.classList.add("correct");
           correctCount++;
         }
 
@@ -148,27 +80,70 @@
       box.appendChild(matchCount);
       box.appendChild(evaluation);
 
-      if (callback) callback(box);
+      if (callback) callback(box, correctCount);
     }
 
     function shuffleAndShow() {
+      stopAuto();
       const allResults = document.getElementById("all-results");
       allResults.innerHTML = "";
+      document.getElementById("attempt-count").textContent = "";
       shuffleOnce((box) => {
         allResults.appendChild(box);
       });
     }
 
     function tenShuffles() {
+      stopAuto();
       const allResults = document.getElementById("all-results");
       allResults.innerHTML = "";
+      document.getElementById("attempt-count").textContent = "";
       for (let i = 0; i < 10; i++) {
         shuffleOnce((box) => {
           allResults.appendChild(box);
         });
       }
     }
-  </script>
 
+    function startAuto() {
+      stopAuto(); // 二重起動防止
+
+      const targetValue = parseInt(document.getElementById("target-count").value);
+      if (isNaN(targetValue) || targetValue < 0 || targetValue > 12) {
+        alert("目標一致数は 0 〜 12 の間で入力してください。");
+        return;
+      }
+
+      const allResults = document.getElementById("all-results");
+      const attemptDisplay = document.getElementById("attempt-count");
+      allResults.innerHTML = "";
+      attemptDisplay.textContent = "";
+      attemptNumber = 0;
+
+      autoInterval = setInterval(() => {
+        attemptNumber++;
+        attemptDisplay.textContent = `🔁 試行回数: ${attemptNumber} 回`;
+
+        shuffleOnce((box, correctCount) => {
+          allResults.innerHTML = "";
+          allResults.appendChild(box);
+          if (correctCount >= targetValue) {
+            const winMessage = document.createElement("div");
+            winMessage.className = "char";
+            winMessage.textContent = `🎯 ${attemptNumber} 回目で達成！`;
+            allResults.appendChild(winMessage);
+            stopAuto();
+          }
+        });
+      }, 500);
+    }
+
+    function stopAuto() {
+      if (autoInterval !== null) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+      }
+    }
+  </script>
 </body>
 </html>
