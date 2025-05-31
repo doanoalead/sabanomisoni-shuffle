@@ -1,4 +1,79 @@
-<!-- ...前略（スタイル等は前回のまま）... -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>sabanomisoniシャッフル</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 20px;
+      background-color: #fefefe;
+    }
+
+    h1 {
+      font-size: 6vw;
+      margin-bottom: 20px;
+    }
+
+    .char {
+      font-size: 4vw;
+      font-family: monospace;
+      margin: 4px;
+      white-space: pre;
+    }
+
+    .char.correct {
+      background-color: #c0ffc0;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
+    .result-box {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      font-size: 4vw;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    input {
+      font-size: 4vw;
+      padding: 5px;
+      width: 60px;
+      text-align: center;
+    }
+
+    @media (min-width: 600px) {
+      .char { font-size: 20px; }
+      button, input { font-size: 16px; }
+      h1 { font-size: 32px; }
+    }
+  </style>
+</head>
 <body>
 
   <h1>🍲 sabanomisoni シャッフル！</h1>
@@ -106,7 +181,7 @@
     }
 
     function startAuto() {
-      stopAuto(); // 二重起動防止
+      stopAuto();
 
       const targetValue = parseInt(document.getElementById("target-count").value);
       if (isNaN(targetValue) || targetValue < 0 || targetValue > 12) {
@@ -145,5 +220,6 @@
       }
     }
   </script>
+
 </body>
 </html>
