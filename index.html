@@ -8,17 +8,18 @@
     body {
       font-family: sans-serif;
       text-align: center;
-      margin: 20px;
+      margin: 0;
+      padding: 20px;
       background-color: #fefefe;
     }
 
     h1 {
-      font-size: 6vw;
+      font-size: 8vw;
       margin-bottom: 20px;
     }
 
     .char {
-      font-size: 4vw;
+      font-size: 5vw;
       font-family: monospace;
       margin: 4px;
       white-space: pre;
@@ -31,14 +32,12 @@
     }
 
     .result-box {
-      margin-bottom: 20px;
+      margin: 20px auto;
       padding: 15px;
       border: 1px solid #ddd;
       border-radius: 8px;
       background-color: #f9f9f9;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
+      max-width: 90vw;
     }
 
     .buttons {
@@ -46,9 +45,9 @@
     }
 
     button {
-      font-size: 4vw;
+      font-size: 5vw;
       padding: 10px 20px;
-      margin: 10px;
+      margin: 5px;
       border: none;
       border-radius: 6px;
       background-color: #4CAF50;
@@ -61,16 +60,21 @@
     }
 
     input {
-      font-size: 4vw;
+      font-size: 5vw;
       padding: 5px;
       width: 60px;
       text-align: center;
+      margin-left: 5px;
+    }
+
+    #attempt-count {
+      margin-top: 10px;
     }
 
     @media (min-width: 600px) {
+      h1 { font-size: 32px; }
       .char { font-size: 20px; }
       button, input { font-size: 16px; }
-      h1 { font-size: 32px; }
     }
   </style>
 </head>
@@ -82,13 +86,14 @@
     <button onclick="shuffleAndShow()">1回だけ</button>
     <button onclick="tenShuffles()">🎲 十連ガチャ！</button>
     <br><br>
-    <label>🎯目標一致数：</label>
+    <label style="font-size:4vw;">🎯目標一致数：</label>
     <input id="target-count" type="number" min="0" max="12" value="12" />
+    <br><br>
     <button onclick="startAuto()">▶️ 自動抽選開始</button>
     <button onclick="stopAuto()">⏹ 停止</button>
   </div>
 
-  <div class="char" id="attempt-count" style="margin-top:10px;"></div>
+  <div class="char" id="attempt-count"></div>
   <div id="all-results"></div>
 
   <script>
