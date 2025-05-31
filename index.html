@@ -24,6 +24,12 @@
       white-space: pre;
     }
 
+    .char.correct {
+      background-color: #c0ffc0;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
     .result-box {
       margin-bottom: 30px;
       padding: 15px;
@@ -54,7 +60,6 @@
       background-color: #45a049;
     }
 
-    /* PC画面用に少し調整 */
     @media (min-width: 600px) {
       .char {
         font-size: 20px;
@@ -82,12 +87,22 @@
   </div>
 
   <script>
+    const target = "sabanomisoni";
+    const targetList = target.split('');
+
+    function getEvaluation(correctCount) {
+      if (correctCount === 12) return "👑 神！完全一致！";
+      if (correctCount >= 9) return "🌟 すごい！あと少し！";
+      if (correctCount >= 6) return "✨ なかなかいい線いってる！";
+      if (correctCount >= 3) return "🙂 惜しい！";
+      if (correctCount >= 1) return "😅 うーん、遠いけど頑張れ！";
+      return "💀 全ハズレ…もう一回！";
+    }
+
     function shuffleOnce(callback) {
-      const target = "sabanomisoni";
-      let chars = target.split('');
+      let chars = [...targetList];
       let result = "";
 
-      // シャッフル（Fisher–Yates）
       for (let i = chars.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [chars[i], chars[j]] = [chars[j], chars[i]];
@@ -99,11 +114,19 @@
       const output = document.createElement("div");
       const resultLine = document.createElement("div");
 
-      chars.forEach((char, index) => {
+      let correctCount = 0;
+
+      chars.forEach((char, i) => {
         result += char;
         const span = document.createElement("span");
         span.className = "char";
-        span.textContent = `${String(index + 1).padStart(2)}文字目 → ${char}`;
+
+        if (char === targetList[i]) {
+          span.classList.add("correct"); // ハイライト
+          correctCount++;
+        }
+
+        span.textContent = `${String(i + 1).padStart(2)}文字目 → ${char}`;
         output.appendChild(span);
         output.appendChild(document.createElement("br"));
       });
@@ -113,12 +136,17 @@
       output.appendChild(document.createElement("br"));
       output.appendChild(resultLine);
 
-      const verdict = document.createElement("div");
-      verdict.className = "char";
-      verdict.textContent = (result === target) ? "🎉 完全一致！sabanomisoni！" : "😢 違いました。";
+      const matchCount = document.createElement("div");
+      matchCount.className = "char";
+      matchCount.textContent = `🟢 一致している文字の数: ${correctCount} / 12`;
+
+      const evaluation = document.createElement("div");
+      evaluation.className = "char";
+      evaluation.textContent = getEvaluation(correctCount);
 
       box.appendChild(output);
-      box.appendChild(verdict);
+      box.appendChild(matchCount);
+      box.appendChild(evaluation);
 
       if (callback) callback(box);
     }
